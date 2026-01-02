@@ -1,8 +1,9 @@
 on: [push, pull_request, workflow_dispatch]
 
+env:
+  # Make Zephyr sources visible to the called reusable workflow
+  ZEPHYR_BASE: ${{ github.workspace }}/zephyr
+
 jobs:
   build:
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
-    env:
-      # Point Zephyr tooling to the Zephyr checkout that the job fetches
-      ZEPHYR_BASE: ${{ github.workspace }}/zephyr
