@@ -1,49 +1,5 @@
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  matrix:
-    runs-on: ubuntu-22.04
-    name: Fetch Build Keyboards
-    outputs:
-      build_matrix: ${{ env.build_matrix }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Fetch Build Matrix
-        run: |
-          echo "build_matrix=$(yq -oj -I0 'build.yaml')" >> $GITHUB_ENV
-          yq -oj "build.yaml"
-
   build:
-    runs-on: ubuntu-latest
-    container:
-      image: zmkfirmware/zmk-build-arm:stable
-    needs: matrix
-    name: Build
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.matrix.outputs.build_matrix) }}
-    steps:
-      - name: Act Workaround # https://github.com/nektos/act/issues/973
-        if: ${{ env.ACT }}
-        run: |
-          apt-get update && apt-get install -y curl unzip
-          curl -fsSL https://deb.nodesource.com/setup_22.x | bash && apt install -y nodejs
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Create build directory
-        run: |
-          echo "build_dir=$(mktemp -d)" >> $GITHUB_ENV
-
-      - name: Prepare variables
-        shell: bash -x {0}
-        env:
-          board: ${{ matrix.board }}
-          shield: ${{ matrix.shield }}
-          artifact_name: ${{ matrix.artifact-name }}
-          snippet: ${{ matrix.snippet }}
-        run: |
-          if [
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
