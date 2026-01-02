@@ -3,3 +3,5 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   build:
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+# Point Zephyr tooling to the Zephyr checkout that the job fetches
+      ZEPHYR_BASE: ${{ github.workspace }}/zephyr
